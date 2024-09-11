@@ -1,0 +1,121 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
+
+.homepage {
+  background-image: url("@/assets/home.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  color: rgb(0, 29, 101);
+  text-align: center;
+  position: relative;
+}
+
+.content {
+  text-align: left;
+  padding: 20px;
+}
+
+.header {
+  position: absolute;
+  bottom: 425px;
+  left: 125px;
+  font-size: 90px;
+  margin-bottom: 10px;
+  font-family: "Nunito", sans-serif;
+}
+
+.description {
+  position: absolute;
+  bottom: 310px;
+  left: 125px;
+  font-size: 20px;
+  margin-bottom: 30px;
+  font-family: "Nunito", sans-serif;
+}
+
+.homepage .button-container {
+  position: absolute;
+  bottom: 230px;
+  left: 165px;
+  display: flex;
+  gap: 40px;
+}
+
+.homepage .login-button,
+.homepage .create-account-button {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 12.5px;
+  padding: 15px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.homepage .login-button:hover,
+.homepage .create-account-button:hover {
+  background-color: #333;
+}
+
+/* Login page styling */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: #f0f2f5;
+}
+
+.login-page h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.login-page label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.login-page input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 400px) {
+  .login-page form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .login-page .button-container {
+    flex-direction: column;
+  }
+
+  .login-page .login-button,
+  .login-page .forgot-password-btn {
+    margin: 5px 0;
+    width: 100%;
+  }
+}
