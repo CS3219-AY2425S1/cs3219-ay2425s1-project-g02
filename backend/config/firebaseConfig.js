@@ -16,4 +16,18 @@ initializeApp({
 const auth = getAuth();
 const db = getFirestore();
 
-module.exports = { auth, db };
+// config for account creation/auth
+const firebaseConfig = {
+  apiKey: "AIzaSyCsHIrpIDMmmCYY802GDF8aA7lcJ1Aa40U",
+  authDomain: "peerprep-g02.firebaseapp.com",
+  projectId: "peerprep-g02",
+  storageBucket: "peerprep-g02.appspot.com",
+  messagingSenderId: "1079323726684",
+  appId: "1:1079323726684:web:56bd9bfdad2291e7ed6799",
+  measurementId: "G-6HZXZE70J3"
+};
+
+const app = initializeApp(firebaseConfig);
+const loginAuth = getAuth(app);
+
+module.exports = { auth, db, loginAuth };
