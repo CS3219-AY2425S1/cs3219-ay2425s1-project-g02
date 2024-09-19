@@ -34,7 +34,7 @@ const CreateAccountPage: React.FC = () => {
 			await createUserWithEmailAndPassword(loginAuth, email, password);
 
 			// show alert & redirect after 3s
-            setAlertIcon(true);
+			setAlertIcon(true);
 			setAlertTitle("Account created successfully");
 			setAlertDescription("Redirecting to login page...");
 			setVisible(true);
@@ -42,17 +42,16 @@ const CreateAccountPage: React.FC = () => {
 				navigate("/login");
 			}, 3000);
 		} catch (error) {
-			// toast msg "Error creating account"
 			if (error instanceof Error) {
-                // display error message
-                setAlertIcon(false);
+				// display error message
+				setAlertIcon(false);
 				setAlertTitle("Error");
 				setAlertDescription(error.message);
 				setVisible(true);
-                // hide alert after 3s
-                setTimeout(() => {
-                    setVisible(false);
-                }, 3000);
+				// hide alert after 3s
+				setTimeout(() => {
+					setVisible(false);
+				}, 3000);
 			}
 		}
 	};
@@ -70,7 +69,11 @@ const CreateAccountPage: React.FC = () => {
 						}}
 					>
 						<Alert>
-							{alertIcon ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+							{alertIcon ? (
+								<Check className="h-4 w-4" />
+							) : (
+								<X className="h-4 w-4" />
+							)}
 							<AlertTitle>{alertTitle}</AlertTitle>
 							<AlertDescription>{alertDescription}</AlertDescription>
 						</Alert>
