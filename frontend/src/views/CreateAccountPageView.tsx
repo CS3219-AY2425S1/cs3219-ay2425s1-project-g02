@@ -15,7 +15,7 @@ import { Check, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 // firebase imports
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { loginAuth } from "../config/firebaseConfig";
+import { auth } from "../config/firebaseConfig";
 
 const CreateAccountPage: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
@@ -31,7 +31,7 @@ const CreateAccountPage: React.FC = () => {
 
 		// create account on firebase
 		try {
-			await createUserWithEmailAndPassword(loginAuth, email, password);
+			await createUserWithEmailAndPassword(auth, email, password);
 
 			// show alert & redirect after 3s
 			setAlertIcon(true);
