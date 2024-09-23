@@ -15,10 +15,10 @@ const getAllQuestions = async (req, res) => {
 const createQuestion = async (req, res) => {
   try {
     const questionData = req.body;
-    const { title, description } = questionData;
+    const { title, description, difficulty, topics, examples = [], constraints = [] } = questionData;
 
-    if (!title || !description) {
-      return res.status(400).json({ message: 'Both title and description are required' });
+    if (!title || !description || !difficulty || !topics ) {
+      return res.status(400).json({ message: 'All of title, description, difficulty and topics are required' });
     }
 
     // Check for duplicates (we define duplicates as either having same title or same description)
@@ -40,7 +40,15 @@ const createQuestion = async (req, res) => {
 
     // Add new question to database
     const dateCreated = moment().tz('Asia/Singapore').format(); // Gets the current time in Singapore Time
-    const questionDataWithDateCreated = { ...questionData, dateCreated };
+    const questionDataWithDateCreated = {
+      title,
+      description,
+      difficulty,
+      topics,
+      examples, // Ensure this field is always included
+      constraints, // Ensure this field is always included
+      dateCreated
+    };
     const newQuestionRef = await db.collection('questions').add(questionDataWithDateCreated);
     res.status(201).json({ id: newQuestionRef.id, ...questionDataWithDateCreated });
   } catch (error) {

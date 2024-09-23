@@ -4,6 +4,7 @@ import "./App.css";
 import HomePageView from "./views/HomePageView";
 import LoginPage from "./views/LoginPageView";
 import QuestionPageView from "./views/QuestionPageView";
+import CreateAccountPageView from "./views/CreateAccountPageView";
 import CollabPageView from "./views/CollabPageView";
 import DeleteAccountPage from "./views/DeleteAccountPageView";
 import AdminConsoleView from "./views/AdminConsoleView";
@@ -16,14 +17,10 @@ const App: React.FC = () => {
         <Route path="/" element={<HomePageView />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/questions" element={<QuestionPageView />} />
+        <Route path="/create-account" element={<CreateAccountPageView />} />
         <Route path="/collab" element={<CollabPageView />} />
         <Route path="/delete-account" element={<DeleteAccountPage />} />
         <Route path="/adminconsole" element={<AdminConsoleView />} />
-        <Route
-          path="/create-account"
-          element={<div>Create Account Page</div>}
-        />{" "}
-        {/* Placeholder for Create Account Page */}
         <Route path="*" element={<p>404: Page Not Found!</p>} />
       </Routes>
     </BrowserRouter>

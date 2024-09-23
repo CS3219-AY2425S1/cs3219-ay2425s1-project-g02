@@ -51,6 +51,7 @@ The PeerPrep backend provides a service for managing and querying questions used
 
 3. **Delete a question**
    
+
    To delete a question, go to localhost:5001 on postman, select delete type, and add the following json to the http request body:
 
    ```sh

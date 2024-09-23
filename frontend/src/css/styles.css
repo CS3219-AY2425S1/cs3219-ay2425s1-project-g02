@@ -288,3 +288,16 @@
     width: 100%;
   }
 }
+
+.page-background {
+  background-color: rgb(194, 237, 252);
+  height: 100vh;
+  width: 100vw;
+}
+
+.create-account-page .center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
