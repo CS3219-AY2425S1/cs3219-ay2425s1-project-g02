@@ -109,7 +109,7 @@ module.exports = {
 
 // controllers/userController.js
 
-const admin = require('../config/firebaseConfig'); // Import Firebase config for admin SDK
+const admin = require('../../question_service/config/firebaseConfig'); // Import Firebase config for admin SDK
 
 // Placeholder function for user login (handled on the frontend with Firebase)
 const loginUser = async (req, res) => {

@@ -2,7 +2,12 @@
 # CS3219 Project (PeerPrep) - AY2425S1
 ## Group: G02
 
-### Note: 
-- You can choose to develop individual microservices within separate folders within this repository **OR** use individual repositories (all public) for each microservice. 
-- In the latter scenario, you should enable sub-modules on this GitHub classroom repository to manage the development/deployment **AND** add your mentor to the individual repositories as a collaborator. 
-- The teaching team should be given access to the repositories as we may require viewing the history of the repository in case of any disputes or disagreements. 
+### How to start up the application:
+
+```sh
+cd project-root/
+docker compose build
+docker compose up -d
+```
+
+Access the frontend at `localhost:3000`, the user service (backend) at `localhost:5001` and the question service (backend) at `localhost:5002`.

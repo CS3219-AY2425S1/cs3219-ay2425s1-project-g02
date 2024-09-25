@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +28,7 @@ export function LoginCard() {
               <Input
                 id="email"
                 placeholder="e.g. user@example.com"
-                onChange={(e) => setEmail(e.target.value)}
+                // onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -39,7 +37,7 @@ export function LoginCard() {
               <Input
                 id="password"
                 placeholder="password"
-                onChange={(e) => setPassword(e.target.value)}
+                // onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>

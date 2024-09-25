@@ -1,7 +1,8 @@
-import { Difficulty, Question, Topic } from "@/models/Question";
-import React, { useEffect, useState } from "react";
-import { DataTable } from "../../ui/data-table";
+import { Question } from "@/models/Question";
+import { useEffect, useState } from "react";
 import { columns } from "./columns";
+import { getAllQuestions } from "@/services/QuestionFunctions";
+import { DataTable } from "./data-table";
 
 function QuestionTable() {
   const [data, setData] = useState<Question[]>([]);
@@ -33,92 +34,20 @@ function QuestionTable() {
 
 // Your async function for fetching data remains the same
 async function getData(): Promise<Question[]> {
-  const questions: Question[] = [
-    {
-      id: "1",
-      question:
-        "Given an array of integers, return indices of the two numbers such that they add up to a specific target.",
-      topics: [Topic.Array],
-      difficulty: Difficulty.Easy,
-    },
-    {
-      id: "2",
-      question:
-        "Given a collection of distinct integers, return all possible permutations.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Medium,
-    },
-    {
-      id: "3",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "4",
-      question:
-        "Given an array of integers, return indices of the two numbers such that they add up to a specific target.",
-      topics: [Topic.Array],
-      difficulty: Difficulty.Easy,
-    },
-    {
-      id: "5",
-      question:
-        "Given a collection of distinct integers, return all possible permutations.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Medium,
-    },
-    {
-      id: "6",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "7",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "8",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "9",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "10",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "11",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-    {
-      id: "12",
-      question:
-        "lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc. lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
-      topics: [Topic.BackTracking],
-      difficulty: Difficulty.Hard,
-    },
-  ];
+  const res = await getAllQuestions();
+
+  if (!res.success) {
+    console.error("Error fetching data", res.error);
+    return [];
+  }
+
+  const questions: Question[] = res.data;
+
+  questions.sort((a, b) => {
+    const aDate = new Date(a.dateCreated).getTime();
+    const bDate = new Date(b.dateCreated).getTime();
+    return aDate - bDate;
+  });
 
   return questions;
 }

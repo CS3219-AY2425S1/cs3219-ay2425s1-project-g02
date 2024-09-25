@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../config/firebaseConfig"; // Adjust the path if necessary
 import { signInWithEmailAndPassword } from "firebase/auth";
 import "@/css/styles.css"; // Adjust the path if necessary
+import { auth } from "../config/firebaseConfig"; // Adjust the path if necessary
+import { signInWithEmailAndPassword } from "firebase/auth";
+import "@/css/styles.css"; // Adjust the path if necessary
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,11 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import profileIcon from "@/assets/profile.png";
+import profileIcon from "@/assets/profile.png";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [showDropdown, setShowDropdown] = useState<boolean>(false); // State to control dropdown visibility
   const [showDropdown, setShowDropdown] = useState<boolean>(false); // State to control dropdown visibility
   const navigate = useNavigate();
 
@@ -28,11 +33,15 @@ const LoginPage: React.FC = () => {
     console.log("Login attempted");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const idToken = await userCredential.user.getIdToken();
-      localStorage.setItem('authToken', idToken);
-      navigate("/login-success");
-    } catch (error) {
+      localStorage.setItem("authToken", idToken);
+      navigate("/questions");
+    } catch {
       setError("Login failed. Please check your credentials.");
     }
   };
@@ -87,7 +96,11 @@ const LoginPage: React.FC = () => {
           <CardTitle>Login</CardTitle>
           <CardDescription className="flex justify-between items-center">
             Don’t have an account?
-            <Button variant="link" onClick={() => navigate("/create-account")}>
+            <Button
+              className="sign-up-button"
+              variant="link"
+              onClick={() => navigate("/create-account")}
+            >
               Sign up here!
             </Button>
           </CardDescription>
@@ -107,9 +120,11 @@ const LoginPage: React.FC = () => {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   placeholder="password"
+                  type="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -117,11 +132,15 @@ const LoginPage: React.FC = () => {
                 />
               </div>
               {error && <div className="error-message">{error}</div>}
+              {error && <div className="error-message">{error}</div>}
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="submit">Login</Button>
-            <Button variant="outline" onClick={() => navigate("/forgot-password")}>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/forgot-password")}
+            >
               Forget Password
             </Button>
           </CardFooter>

@@ -20,10 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "./button";
 import { useState } from "react";
-import { Input } from "./input";
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { topicArray } from "@/models/Question";
+import AddQuestionButton from "../Question/AddQuestionButton";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -34,36 +36,55 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
     columns,
+    enableGlobalFilter: true,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       columnFilters,
+      globalFilter,
+    },
+    initialState: {
+      columnVisibility: {
+        topics: false,
+      },
     },
   });
 
+  const handleValueChange = (selectedValues: string[]) => {
+    table.getColumn("topics")?.setFilterValue(selectedValues);
+  };
+
   return (
     <>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between my-3">
         <Input
-          placeholder="Filter Me..."
-          value={
-            (table.getColumn("question")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("question")?.setFilterValue(event.target.value)
-          }
+          placeholder="Filter"
+          value={globalFilter}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
+
+        <MultiSelect
+          options={topicArray}
+          value={(table.getColumn("topics")?.getFilterValue() as string) ?? ""}
+          onValueChange={handleValueChange}
+          placeholder="Filter Topics"
+          className="max-w-sm"
+        />
+
+        <AddQuestionButton />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -72,7 +93,13 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        minWidth: header.column.columnDef.size,
+                        maxWidth: header.column.columnDef.size,
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -93,7 +120,13 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        minWidth: cell.column.columnDef.size,
+                        maxWidth: cell.column.columnDef.size,
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

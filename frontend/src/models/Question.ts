@@ -6,12 +6,44 @@ export enum Difficulty {
 
 export enum Topic {
   Array = "Array",
-  BackTracking = "Back Tracking",
+  Strings = "Strings",
+  LinkedLists = "Linked Lists",
+  Stacks = "Stacks",
+  Queues = "Queues",
+  Hashing = "Hashing",
+  Trees = "Trees",
+  Heaps = "Heaps",
+  Graphs = "Graphs",
+  DynamicProgramming = "Dynamic Programming",
+  Recursion = "Recursion",
+  Greedy = "Greedy",
+  BitManipulation = "Bit Manipulation",
+  Math = "Math",
+  Algorithms = "Algorithms",
 }
+
+export type QuestionExample = {
+  input: string;
+  output: string;
+};
+
+export const topicArray = Object.keys(Topic).map((key) => ({
+  value: Topic[key as keyof typeof Topic],
+  label: Topic[key as keyof typeof Topic],
+}));
+
+export const difficultyArray = Object.keys(Difficulty).map((key) => ({
+  value: Difficulty[key as keyof typeof Difficulty],
+  label: Difficulty[key as keyof typeof Difficulty],
+}));
 
 export type Question = {
   id: string;
-  question: string;
+  title: string;
+  description: string;
   topics: Topic[];
   difficulty: Difficulty;
+  dateCreated: string;
+  examples: QuestionExample[];
+  constraints: string[];
 };
