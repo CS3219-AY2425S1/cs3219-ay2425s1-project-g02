@@ -43,7 +43,14 @@ const App: React.FC = () => {
             </ProtectedRoute>
           } 
         />
-        <Route path="/adminconsole" element={<AdminConsoleView />} />
+        <Route
+          path="/adminconsole"
+          element={
+            <ProtectedRoute>
+              <AdminConsoleView />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<p>404: Page Not Found!</p>} />
       </Routes>
     </BrowserRouter>

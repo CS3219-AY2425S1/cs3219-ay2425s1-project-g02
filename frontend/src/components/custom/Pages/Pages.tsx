@@ -7,7 +7,7 @@ import {
     PaginationNext,
     PaginationPrevious,
   } from "@/components/ui/pagination"
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export function Pages() {
 
@@ -16,6 +16,7 @@ export function Pages() {
 
     const handleNextPage = () => {
         setPage(() => page == maxPage ? page : page + 1);
+        setMaxPage(() => page == maxPage ? maxPage : page + 3);
       };
 
       const handlePrevPage = () => {
