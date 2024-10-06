@@ -28,11 +28,15 @@ const LoginPage: React.FC = () => {
     console.log("Login attempted");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const idToken = await userCredential.user.getIdToken();
-      localStorage.setItem('authToken', idToken);
+      localStorage.setItem("authToken", idToken);
       navigate("/questions");
-    } catch (error) {
+    } catch {
       setError("Login failed. Please check your credentials.");
     }
   };
@@ -87,7 +91,11 @@ const LoginPage: React.FC = () => {
           <CardTitle>Login</CardTitle>
           <CardDescription className="flex justify-between items-center">
             Don’t have an account?
-            <Button className="sign-up-button" variant="link" onClick={() => navigate("/create-account")}>
+            <Button
+              className="sign-up-button"
+              variant="link"
+              onClick={() => navigate("/create-account")}
+            >
               Sign up here!
             </Button>
           </CardDescription>
@@ -121,7 +129,10 @@ const LoginPage: React.FC = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="submit">Login</Button>
-            <Button variant="outline" onClick={() => navigate("/forgot-password")}>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/forgot-password")}
+            >
               Forget Password
             </Button>
           </CardFooter>

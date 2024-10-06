@@ -257,21 +257,6 @@
   margin-bottom: 10px;
 }
 
-.admin-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  min-width: 100vw;
-  background-color: #f0f2f5;
-  position: relative;
-}
-
-.admin-page TableHeader {
-  text-align: left;
-}
-
 @media (max-width: 400px) {
   .login-page form {
     width: 100%;

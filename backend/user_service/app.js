@@ -5,9 +5,9 @@ const userRoutes = require('./routes/userRoutes');
 const firebaseConfig = require("./config/firebaseConfig"); // Ensure Firebase is initialized
 const app = express();
 
-// Allow requests from http://localhost:3000 (production frontend) and http://localhost:5173 (development frontend) with credentials
+// Allow requests from 'https://question-service-1079323726684.asia-southeast1.run.app' (cloudrun question_service) with credentials
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: ['https://question-service-1079323726684.asia-southeast1.run.app'],
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
 
@@ -19,6 +19,5 @@ app.use(bodyParser.json()); // Parse JSON request bodies
 
 // Routes
 app.use('/', userRoutes);
-
 
 module.exports = app;

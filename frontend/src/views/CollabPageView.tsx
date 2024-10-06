@@ -1,4 +1,3 @@
-import QuestionCard from "@/components/custom/Question/QuestionCard";
 import QuestionDialog from "@/components/custom/Question/QuestionDialog";
 import { Difficulty, Question, Topic } from "@/models/Question";
 
