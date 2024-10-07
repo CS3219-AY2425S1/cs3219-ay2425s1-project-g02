@@ -27,6 +27,11 @@ interface FirebaseIDToken {
     exp: number;
 }
 
+interface UserInfo {
+    email?: string;
+    user_id?: string;
+}
+
 const decodeToken = (token: string): FirebaseIDToken | null => {
     try {
       const base64Url = token.split('.')[1];
@@ -61,19 +66,23 @@ const AdminConsoleView: React.FC = () => {
     }, []);
     
 
+    const users = [{}];
+
+    // async function getUsers(): Promise<userInfo[]> {
+    //     const result = fet
+    // }
     
-    
-    const users = [
-        { id: 1, name: 'A', age: 30, occupation: 'None', location: 'Nowhere', },
-        { id: 2, name: 'B', age: 25, occupation: 'No', location: 'Nah', },
-        { id: 3, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
-        { id: 4, name: 'A', age: 30, occupation: 'None', location: 'Nowhere',  },
-        { id: 5, name: 'B', age: 25, occupation: 'No', location: 'Nah',  },
-        { id: 6, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
-        { id: 7, name: 'A', age: 30, occupation: 'None', location: 'Nowhere', },
-        { id: 8, name: 'B', age: 25, occupation: 'No', location: 'Nah', },
-        { id: 9, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
-    ];
+    // const users = [
+    //     { id: 1, name: 'A', age: 30, occupation: 'None', location: 'Nowhere', },
+    //     { id: 2, name: 'B', age: 25, occupation: 'No', location: 'Nah', },
+    //     { id: 3, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
+    //     { id: 4, name: 'A', age: 30, occupation: 'None', location: 'Nowhere',  },
+    //     { id: 5, name: 'B', age: 25, occupation: 'No', location: 'Nah',  },
+    //     { id: 6, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
+    //     { id: 7, name: 'A', age: 30, occupation: 'None', location: 'Nowhere', },
+    //     { id: 8, name: 'B', age: 25, occupation: 'No', location: 'Nah', },
+    //     { id: 9, name: 'C', age: 35, occupation: 'Rice farmer', location: 'Asia', },
+    // ];
     
     return (
         <main className="admin-page">
