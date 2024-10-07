@@ -24,27 +24,6 @@ export const getUsers = async (req: Request, res: Response) => {
       res.status(500).send('Error fetching users');
     }
   };
-  
-
-// Define a function to decode the Firebase token and extract claims
-const decodeAuthToken = (token: string) => {
-  try {
-    const base64Url = token.split('.')[1];  // JWT payload
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    console.error("Error decoding auth token:", e);
-    return null;
-  }
-};
 
 // Function to list all users in Firebase Authentication
 export const listAllUsers = async (): Promise<User[]> => {

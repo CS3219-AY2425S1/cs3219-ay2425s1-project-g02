@@ -14,11 +14,3 @@ Access the frontend at `localhost:3000` and the question service (backend) at `l
 
 
 
-## Personal use
-
-- [ ] The system should allow administrative accounts with the ability to manage users accounts.
-  - CRUD functionalities of user accounts
-- [ ] The system should allow administrative accounts with the ability to reset passwords of user accounts.
-- [ ] Curated lists of questions
-- [ ] Refresh button
-- [ ] Top bar
