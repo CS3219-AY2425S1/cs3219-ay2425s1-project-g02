@@ -6,6 +6,7 @@ import QuestionPageView from "./views/QuestionPageView";
 import CreateAccountPageView from "./views/CreateAccountPageView";
 import CollabPageView from "./views/CollabPageView";
 import DeleteAccountPage from "./views/DeleteAccountPageView";
+import AdminConsoleView from "./views/AdminConsoleView";
 import ProtectedRoute from "@/components/custom/ProtectedRoute/ProtectedRoute"; 
 
 const App: React.FC = () => {
@@ -41,6 +42,14 @@ const App: React.FC = () => {
               <DeleteAccountPage />
             </ProtectedRoute>
           } 
+        />
+        <Route
+          path="/adminconsole"
+          element={
+            <ProtectedRoute>
+              <AdminConsoleView />
+            </ProtectedRoute>
+          }
         />
         <Route path="*" element={<p>404: Page Not Found!</p>} />
       </Routes>

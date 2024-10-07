@@ -2,6 +2,7 @@
 
 # firebase credentials
 /config/firebaseCredentials.json
+*/firebaseCredentials.json
 
 # dependencies
 /node_modules

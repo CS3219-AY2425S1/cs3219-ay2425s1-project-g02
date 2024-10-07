@@ -48,3 +48,20 @@ export default tseslint.config({
   },
 })
 ```
+
+
+## Personal use
+
+- [ ] The system should allow administrative accounts with the ability to manage users accounts.
+  - CRUD functionalities of user accounts
+- [ ] The system should allow administrative accounts with the ability to reset passwords of user accounts.
+- [ ] Curated lists of questions
+- [ ] Refresh button
+- [ ] Top bar
+- [ ] Abstract table or table rows away to its own component?
+- [ ] SIDEBAR
+
+### References
+
+- [list all users](https://firebase.google.com/docs/auth/admin/manage-users#list_all_users)
+- 
