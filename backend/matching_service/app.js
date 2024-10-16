@@ -36,11 +36,6 @@ app.use(bodyParser.json());
 // Create HTTP server
 const server = createServer(app);
 
-// Start the HTTP server
-// server.listen(3000, () => {
-//   console.log("Server is listening on port 3000");
-// });
-
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
 // Create Redis client instances (one for publishing, and a duplicate for subscribing)

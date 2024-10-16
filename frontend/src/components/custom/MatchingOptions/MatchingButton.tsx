@@ -40,6 +40,7 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
         reset(); // Reset stopwatch
         setMatchFound(true);
         console.log("Match found: ", data);
+        socketRef.current.emit("joinRoom", data.sessionData.uid, data.roomId);
       });
 
       socketRef.current.on("matchmakingTimedOut", (timedOutMessage: any) => {

@@ -14,6 +14,8 @@ class SocketController {
       this.handleStartMatching(socket, data)
     );
 
+    socket.on("joinRoom", (uid, room) => this.handleJoinRoom(socket, uid, room));
+
     socket.on("cancelMatching", (uid) => this.handleCancelMatching(uid));
 
     socket.on("disconnect", () => this.handleDisconnect(socket));
@@ -96,30 +98,43 @@ class SocketController {
       const randomIndex = Math.floor(Math.random() * questions.length);
       const randomQuestion = questions[randomIndex];
 
+      const roomId = currUserSessionData.uid;
+
       // Emit matched to both users
       this.io.to(prevUserSocketId).emit("matched", {
         sessionData: prevUserSessionData,
         questionData: randomQuestion,
+        roomId: roomId,
       });
       currUserSocket.emit("matched", {
         sessionData: currUserSessionData,
         questionData: randomQuestion,
+        roomId: roomId,
       });
+
+      // Logic for collab service: collabService(this.io, roomId) etc
+      // this.io.to(roomId).emit(...)
     } catch (error) {
       console.error(error);
       this.io.to(prevUserSocketId).emit(
         "error",
-        "An error occurred while fetching questions. Please try again later."
+        "An error occurred while handling matching. Please try again later."
       );
       currUserSocket.emit(
         "error",
-        "An error occurred while fetching questions. Please try again later."
+        "An error occurred while handling matching. Please try again later."
       );
     } finally {
       // Remove existing connections
-      this.removeExistingConnection(prevUserSessionData.uid);
-      this.removeExistingConnection(currUserSessionData.uid);
+      // this.removeExistingConnection(prevUserSessionData.uid);
+      // this.removeExistingConnection(currUserSessionData.uid);
     }
+  }
+
+  handleJoinRoom(socket, uid, room) {
+    socket.join(room);
+    console.log(`User ${uid} joined room: ${room}`);
+    this.removeExistingConnection(uid); // To be removed when collab service is in place
   }
 
   handleCancelMatching(uid) {
