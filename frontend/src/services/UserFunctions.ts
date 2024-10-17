@@ -1,7 +1,7 @@
-import { SuccessObject, callFunction } from "@/lib/utils";
+import { SuccessObject, callUserFunction } from "@/lib/utils";
 
 export async function listAllUsers(): Promise<SuccessObject> {
-    const res = await callFunction("listAllUsers");
+    const res = await callUserFunction("listAllUsers");
 
     return res;
 }
