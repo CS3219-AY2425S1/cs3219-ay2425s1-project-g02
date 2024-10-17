@@ -18,18 +18,14 @@ import { Pages } from '@/components/custom/Pages/Pages';
 // import { getAuth } from "firebase/auth";
 // import { useNavigate } from "react-router-dom";
 // import { getFirestore } from "firebase/firestore"; // If using Firestore
-
+import { User } from '@/models/User';
+import { listAllUsers } from '@/services/UserFunctions';
 
 
 interface FirebaseIDToken {
     email?: string;
     user_id?: string;
     exp: number;
-}
-
-interface UserInfo {
-    email?: string;
-    user_id?: string;
 }
 
 const decodeToken = (token: string): FirebaseIDToken | null => {
@@ -50,11 +46,24 @@ const decodeToken = (token: string): FirebaseIDToken | null => {
     }
 };
   
+async function getUsers(): Promise<User[]> {
+  const res = await listAllUsers();
 
+  if (!res.success) {
+    console.error("Error fetching data", res.error);
+    return [];
+  }
+
+  const usersList: User[] = res.data;
+
+  return usersList;
+}
 
 const AdminConsoleView: React.FC = () => {
 
     const [user, setUser] = useState<string | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true); // To show a loading state
     useEffect(() => {
         const token = localStorage.getItem('authToken');  // Assuming 'id_token' is where it's stored
         if (token) {
@@ -62,15 +71,18 @@ const AdminConsoleView: React.FC = () => {
           if (decoded && decoded.email) {
             setUser(decoded.email);  // Show the user's email
           }
+          async function fetchUsers() {
+            const result = await getUsers();
+            setUsers(result);
+          }
+          fetchUsers();
+          setLoading(false);
         }
     }, []);
     
 
-    const users = [{}];
 
-    // async function getUsers(): Promise<userInfo[]> {
-    //     const result = fet
-    // }
+    
     
     // const users = [
     //     { id: 1, name: 'A', age: 30, occupation: 'None', location: 'Nowhere', },
@@ -102,9 +114,7 @@ const AdminConsoleView: React.FC = () => {
                   <TableHead className="w-[100px] text-left">Select</TableHead>
                   <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Occupation</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead>Email</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -120,9 +130,7 @@ const AdminConsoleView: React.FC = () => {
                     </TableCell>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.age}</TableCell>
-                    <TableCell>{user.occupation}</TableCell>
-                    <TableCell>{user.location}</TableCell>
+                    <TableCell>{user.email}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu.Root>
                         <DropdownMenu.Trigger asChild>
