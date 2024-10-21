@@ -81,7 +81,7 @@ export async function callUserFunction(
   try {
     const url = `${userServiceBackendUrl}/${functionName}`;
     const token = localStorage.getItem("authToken");
-    console.log(token);
+    // console.log(token);
 
     const response = await fetch(url, {
       method,

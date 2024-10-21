@@ -1,25 +1,13 @@
 import React, { useState, useEffect } from 'react';
 // import * as Dialog from '@radix-ui/react-dialog';
 // import * as Tooltip from '@radix-ui/react-tooltip';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'; // For interactive menus
-import * as Checkbox from '@radix-ui/react-checkbox'; // Optional: For selecting rows
-import { CheckIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'; // Optional: For checkbox styling
-import "@/css/styles.css"; // Adjust the path if necessary
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Pages } from '@/components/custom/Pages/Pages';
 // import { auth } from "../config/firebaseConfig";
 // import { getAuth } from "firebase/auth";
 // import { useNavigate } from "react-router-dom";
 // import { getFirestore } from "firebase/firestore"; // If using Firestore
 import { User } from '@/models/User';
 import { listAllUsers } from '@/services/UserFunctions';
+import UserTable from '@/components/custom/UserTable/UserTable';
 
 
 interface FirebaseIDToken {
@@ -108,7 +96,21 @@ const AdminConsoleView: React.FC = () => {
             )}
             </div>
           <div className="overflow-x-auto">
-            <Table className="w-full border-collapse border border-gray-300">
+            {loading ? (
+              <p>Getting users... </p>
+            ) : (
+              <div className="font-bold">
+                <UserTable users={users}/>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+      
+    );
+};
+
+{/* <Table className="w-full border-collapse border border-gray-300">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px] text-left">Select</TableHead>
@@ -172,12 +174,6 @@ const AdminConsoleView: React.FC = () => {
                 ))}
               </TableBody>
             </Table>
-            <Pages />
-          </div>
-        </div>
-      </main>
-      
-    );
-};
+            <Pages /> */}
 
 export default AdminConsoleView;

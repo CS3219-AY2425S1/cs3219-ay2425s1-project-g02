@@ -1,4 +1,4 @@
-import { getUsers, listAllUsers, listUsersPaginated } from '../controllers/userController';
+const { getUsers, listAllUsers } = require('../controllers/userController');
 const express = require('express');
 const authenticateToken = require('../middleware/authenticateToken'); // Import the authentication middleware
 const router = express.Router();
@@ -26,4 +26,4 @@ router.get('/admin/users', listAllUsers);
 //   }
 // });
 
-export default router;
+module.exports = router;
