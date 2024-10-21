@@ -1,10 +1,21 @@
 import { Difficulty, Question, Topic } from "@/models/Question";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
+import Editor from "@monaco-editor/react";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { LANGUAGE_VERSIONS, CODE_SNIPPETS } from "../lib/CodeEditorUtil";
+import { relative } from "path";
 
 const customQuestion: Question = {
 	id: "q123",
@@ -43,6 +54,7 @@ const customQuestion: Question = {
 function CollabPageView() {
 	const [code, setCode] = useState("");
 	const [socket, setSocket] = useState<Socket | null>(null);
+	const editorRef = useRef();
 
 	useEffect(() => {
 		// Initialize the WebSocket connection when the component mounts
@@ -65,8 +77,9 @@ function CollabPageView() {
 		};
 	}, []);
 
-	const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newCode = e.target.value;
+	const handleCodeChange = (newCode: string | undefined) => {
+		if (newCode === undefined) return; // if not code, do nothing
+
 		setCode(newCode); // Update the local state
 
 		// Emit the code update to the WebSocket server
@@ -77,6 +90,26 @@ function CollabPageView() {
 				code: newCode,
 			});
 		}
+	};
+
+	// Callback function to mount editor to auto-focus when page loads
+	const onMount = (editor) => {
+		editorRef.current = editor;
+		editor.focus();
+	};
+
+	const languages = Object.entries(LANGUAGE_VERSIONS); // get languages_version JSON
+	const [selectedLang, setSelectedLang] = useState(languages[0][0]); // default to 'typescript'
+
+	// function for separating language from version for neater display
+	const getLangOnly = (langVer: string) => {
+		const [language] = langVer.split(/(\d+)/);
+		return language.trim();
+	};
+
+	const onSelect = (language: string) => {
+		setSelectedLang(language);
+		setCode(CODE_SNIPPETS[language]);
 	};
 
 	return (
@@ -111,18 +144,26 @@ function CollabPageView() {
 				<Button variant="link">Quit Session</Button>
 			</div>
 
-			{/* left side question box */}
-			<div style={{ display: "flex", flex: 1 }}>
+			{/* main page content */}
+			<div
+				style={{
+					display: "flex", // Create a horizontal layout
+					height: "100vh", // Full height of the viewport
+					overflow: "auto", // Add scrollbars when content overflows
+				}}
+			>
+				{/* left side question box */}
 				<div
 					style={{
-						flex: 1, // Takes up equal space as the textarea
-						display: "flex",
+						flexBasis: "50%", // Takes up 50% of the width
 						flexDirection: "column", // Stacks the title and description vertically
 						alignItems: "flex-start", // Aligns the title and description to the left
 						padding: "20px",
 						border: "2px solid lightgrey", // Adds a border
 						borderRadius: "10px", // Rounds the corners
 						margin: "15px 7.5px 15px 15px", // top right bottom left (clockwise)
+						width: "50%",
+						overflow: "auto", // Add scrollbars when content overflows
 					}}
 				>
 					{/* id & title */}
@@ -194,41 +235,117 @@ function CollabPageView() {
 					</div>
 				</div>
 
-				{/* right side textarea */}
+				{/* right side */}
 				<div
 					style={{
-						flex: 1, // Takes up equal space as the question section
-						display: "flex",
-						flexDirection: "column", // Stacks the label and textarea vertically
-						justifyContent: "center", // Centers the textarea horizontally within its section
-						alignItems: "center", // Centers the textarea vertically within its section
-						border: "2px solid lightgrey", // Adds a border
-						padding: "20px",
-						borderRadius: "10px", // Rounds the corners
-						margin: "15px 15px 15px 7.5px", // top right bottom left (clockwise)
+						flexBasis: "50%", // Takes up 50% of the width
+						display: "flex", // Create a vertical layout inside the right half
+						flexDirection: "column", // Stack the top and bottom halves vertically
+						marginLeft: "7.5px",
+						width: "50%",
 					}}
 				>
-					<h2
+					{/* top-right side code editor */}
+					<div
 						style={{
-							fontSize: "1.25rem",
-							fontWeight: "bold",
-							alignSelf: "flex-start",
-							marginBottom: "10px",
+							flex: 6, // Takes up 60% vertically of the right side
+							display: "flex",
+							flexDirection: "column", // Stacks the label and textarea vertically
+							justifyContent: "center", // Centers the textarea horizontally within its section
+							alignItems: "center", // Centers the textarea vertically within its section
+							border: "2px solid lightgrey", // Adds a border
+							padding: "20px",
+							borderRadius: "10px", // Rounds the corners
+							margin: "15px 15px 15px 0px", // top right bottom left (clockwise)
 						}}
 					>
-						Code
-					</h2>
-					<Textarea
-						style={{ height: "100%" }}
-						placeholder="class Solution {
-    public int[] main(int param1, int param2) {
-        
-    }
-}"
-						id="message"
-						value={code}
-						onChange={handleCodeChange}
-					/>
+						{/* div to horizontally align <h2 Code/> and <Select coding language /> */}
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "row", // align items horizontally
+								justifyContent: "flex-start",
+								alignItems: "center", // vertically center them
+								width: "100%",
+								marginBottom: "20px",
+							}}
+						>
+							<h2
+								style={{
+									fontSize: "1.25rem",
+									fontWeight: "bold",
+									alignSelf: "flex-start",
+									margin: "0 25px 0 5px",
+								}}
+							>
+								Code
+							</h2>
+
+							{/* coding language selector */}
+							<Select value={selectedLang} onValueChange={onSelect}>
+								<SelectTrigger className="w-[160px]">
+									<SelectValue>
+										<span>{getLangOnly(selectedLang)}</span>
+									</SelectValue>
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										{languages.map(([language, version]) => (
+											<SelectItem key={language} value={language}>
+												{language}
+												<span style={{ color: "gray" }}>
+													&nbsp;{String(version)}
+												</span>
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</div>
+
+						{/* monaco code editor */}
+						<Editor
+							height="100%"
+							defaultValue={CODE_SNIPPETS[selectedLang]}
+							value={code}
+							language={selectedLang}
+							onChange={(value) => handleCodeChange(value)}
+							onMount={onMount} // Focus the editor when it mounts
+						/>
+					</div>
+
+					{/* bottom-right side output terminal */}
+					<div
+						style={{
+							flex: 4, // takes up 40% vertically of the right side
+							border: "2px solid lightgrey", // Add a border around the right bottom half
+							padding: "15px",
+							borderRadius: "10px", // Rounds the corners
+							margin: "0px 15px 15px 0px", // top right bottom left (clockwise)
+							position: "relative",
+						}}
+					>
+						<h2 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+							Output Terminal
+						</h2>
+						<Textarea
+							style={{
+								marginTop: "10px",
+								height: "60%",
+							}}
+							placeholder="test"
+						/>
+
+						<Button
+							style={{
+								position: "absolute", // Position the Button absolutely inside the parent
+								bottom: "5%", // 5% from the bottom
+								right: "2%", // 2% from the right
+							}}
+						>
+							Run Code
+						</Button>
+					</div>
 				</div>
 			</div>
 		</main>
