@@ -27,13 +27,27 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
         import.meta.env.VITE_MATCHING_SERVICE_BACKEND_URL ||
         "ws://localhost:5003/matching";
       const token = sessionStorage.getItem("authToken");
+      const uid = sessionStorage.getItem("uid");
+      const otherUid = sessionStorage.getItem("otherUid");
+
+      console.log("Session Storage:", sessionStorage);
 
       // Initialize WebSocket connection
       socketRef.current = io(matchingServiceBackendUrl, {
         auth: {
-          token,
+          token: token,
+          uid: uid,
+          otherUid: otherUid,
         },
         withCredentials: true,
+      });
+
+      socketRef.current.on("connect", () => {
+        console.log("Socket connected.");
+      });
+
+      socketRef.current.on("disconnect", () => {
+        console.log("Socket disconnected.");
       });
 
       // Listen for events from backend
@@ -41,6 +55,7 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
         reset(); // Reset stopwatch
         setMatchFound(true);
         console.log("Match found: ", data);
+        socketRef.current.emit("joinRoom", data.sessionData.uid, data.roomId);
       });
 
       socketRef.current.on("navigateToCollab", (data: any) => {
@@ -71,6 +86,10 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
         }
       );
 
+      socketRef.current.on("DisconnectSocket", () => {
+        socketRef.current.disconnect();
+      });
+
       socketRef.current.on("error", (errorMessage: any) => {
         reset(); // Reset stopwatch
         setIsMatching(false);
@@ -79,7 +98,7 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
 
       // Start matchmaking
       socketRef.current.emit("startMatching", {
-        uid: sessionStorage.getItem("uid"),
+        uid: uid,
         difficulty: selectedDifficulty,
         topic: selectedTopic,
       });
@@ -106,20 +125,46 @@ const MatchingButton: React.FC<MatchingButtonProps> = ({
     setIsMatching(true);
   };
 
+  const clearSocketSession = () => {
+    if (socketRef.current) {
+      socketRef.current.disconnect(); // Clear the socket session
+    }
+  };
+
   const handleCancelMatchmaking = () => {
     reset();
     setIsMatching(false);
-    socketRef.current.emit("cancelMatching", {
-      uid: sessionStorage.getItem("uid"),
-    });
+    socketRef.current.emit("cancelMatching", sessionStorage.getItem("uid"));
   };
 
   const navigateToCollabPage = (data: any) => {
-    console.log("Navigating to collaboration page with data:", data);
+    if (!data) {
+      console.error("No data received for navigation.");
+      return;
+    }
     const { sessionId } = data; // Extract sessionId from the data object
-    navigate(`/collab/${sessionId}`);
-  };
+    console.log("Extracted sessionId:", sessionId);
+    if (!sessionId) {
+        console.error("sessionId is missing.");
+        return;
+    }
+    if (socketRef.current && socketRef.current.connected) {
+      const collabPageUrl = `/collab/${sessionId}`;
+      console.log("Navigating to URL:", collabPageUrl);
 
+      const uid = sessionStorage.getItem("uid");
+      console.log("User ID (uid):", uid);
+      
+      clearSocketSession();
+
+      setTimeout(() => {
+        navigate(collabPageUrl);
+      }, 5000); // 1000 milliseconds = 1 second
+    } else {
+      console.warn("Socket is not connected when trying to navigate to the collaboration page.");
+    }
+  };
+  
   return (
     <div>
       {isMatching && !matchFound ? (

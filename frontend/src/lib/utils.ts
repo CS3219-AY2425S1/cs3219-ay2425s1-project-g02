@@ -41,7 +41,6 @@ export async function callFunction(
   try {
     const url = `${questionServiceBackendUrl}/${functionName}`;
     const token = sessionStorage.getItem("authToken");
-    
     console.log(token);
 
     const response = await fetch(url, {

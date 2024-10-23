@@ -79,9 +79,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', (data) => {
-    const { sessionId, message, username} = data; // Extract sessionId, message, and username
+    const { sessionId, message} = data; // Extract sessionId, message, and username
     io.to(sessionId).emit('messageReceived', {
-        username, // Send the current user's username
+        username: socket.id, // Send the current user's username
         message, // Send the message
     });
   });

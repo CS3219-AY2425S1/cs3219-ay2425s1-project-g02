@@ -1,7 +1,6 @@
 const { auth } = require('../config/firebaseConfig');
 
 const authenticateToken = async (req, res, next) => {
-
   console.log("Verifying token");
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];

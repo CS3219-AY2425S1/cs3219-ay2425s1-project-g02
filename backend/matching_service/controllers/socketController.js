@@ -1,10 +1,12 @@
 const { QueueService } = require("../services/QueueService");
-const TIMEOUT_TIME = 30000;
+const TIMEOUT_TIME = require("../utils/CONSTANTS");
 
 class SocketController {
-  constructor() {
-    this.socketMap = new Map();
-    this.queueService = new QueueService(this.socketMap);
+  constructor(io, pubClient, subClient, connection) {
+    this.io = io;
+    this.pubClient = pubClient;
+    this.subClient = subClient;
+    this.queueService = new QueueService(pubClient, subClient, connection);
   }
 
   handleConnection(socket) {
@@ -18,23 +20,21 @@ class SocketController {
   }
 
   async handleStartMatching(socket, { uid, difficulty, topic }) {
-    this.emitIfDoubleMatchingRequest(uid); // Handles edge case whereby user starts matching from two different sessions simultaneously
-    this.removeExistingConnection(uid); // Remove any existing connections for this user
-
-    // Alert user if database does not contain the requested question type
-    console.log(topic[0]);
-    console.log(difficulty[0]);
+    await this.emitIfDoubleMatchingRequest(uid); // Emit event if double matching requests from same user
+    await this.removeExistingConnection(uid); // Remove any existing connections for this user
 
     // Set a timeout for matching
     setTimeout(() => this.handleTimeout(socket, uid), TIMEOUT_TIME);
 
     try {
+      // Get all questions for a certain topic and difficulty
       const questions = await this.getAllQuestionsOfTopicAndDifficulty(
         socket.handshake.auth.token,
         topic[0],
         difficulty[0]
       );
-
+      
+      // Alert user and stop matching if requested question type does not exist in database
       if (!Array.isArray(questions) || questions.length === 0) {
         socket.emit(
           "noQuestionsFound",
@@ -53,31 +53,28 @@ class SocketController {
       return;
     }
 
-    // Add the socket to the map
     const queueName = this.queueService.getQueueName(difficulty, topic);
-    this.socketMap.set(uid, { socket, queueName });
+    // Add user to redis
+    await this.pubClient.set(uid, socket.id);
 
-    const sessionData = this.queueService.matchUser(queueName, uid);
-    if (sessionData) this.handleMatching(socket,sessionData); // Proceed to handleMatching if found 2 users
+    const sessionData = await this.queueService.matchUser(queueName, uid, socket.id);
+    // If found other user in queue
+    if (sessionData) {
+      this.handleMatching(socket, sessionData, difficulty[0], topic[0]); // Proceed to handleMatching if found 2 users
+    }
   }
 
-  handleCancelMatching(uid) {
-    this.removeExistingConnection(uid);
-  }
-
-  async handleMatching(socket, sessionData) {
-    const { questionData, prevUserSessionData, currUserSessionData } =
-      sessionData;
-
-    const prevUserSocket = this.socketMap.get(prevUserSessionData.uid).socket;
-    const currUserSocket = this.socketMap.get(currUserSessionData.uid).socket;
-
+  async handleMatching(currUserSocket, sessionData, difficulty, topic) {
+    console.log("this.io:", this.io);
+    const { prevUserSessionData, currUserSessionData } = sessionData;
     const token = currUserSocket.handshake.auth.token;
-    const { difficulty, topic } = questionData;
+
+    const prevUserSocketId = prevUserSessionData.socketId;
+    const prevUserSocket = this.io.sockets.get(prevUserSocketId);
 
     const createsession =
-      process.env.COLLAB_SERVICE_CREATE_SESSION_BACKEND_URL ||
-      "http://localhost:5004/create-session";
+    process.env.COLLAB_SERVICE_CREATE_SESSION_BACKEND_URL ||
+    "http://localhost:5004/create-session";
 
     try {
       const questions = await this.getAllQuestionsOfTopicAndDifficulty(
@@ -88,14 +85,15 @@ class SocketController {
 
       // Alert user if database does not contain the requested question type
       if (!Array.isArray(questions) || questions.length === 0) {
-        prevUserSocket.emit(
+        this.io.to(prevUserSocketId).emit(
           "noQuestionsFound",
           "No questions available for the selected topic and difficulty. Please choose another."
         );
         currUserSocket.emit(
           "noQuestionsFound",
           "No questions available for the selected topic and difficulty. Please choose another."
-        );
+        );  
+
         this.removeExistingConnection(prevUserSessionData.uid);
         this.removeExistingConnection(currUserSessionData.uid);
         return; // Exit the function if no questions are found
@@ -105,18 +103,24 @@ class SocketController {
       const randomIndex = Math.floor(Math.random() * questions.length);
       const randomQuestion = questions[randomIndex];
 
+      const roomId = currUserSessionData.uid;
+
       // Emit matched to both users
-      prevUserSocket.emit("matched", {
+      this.io.to(prevUserSocketId).emit("matched", {
         sessionData: prevUserSessionData,
         questionData: randomQuestion,
+        roomId: roomId,
       });
       currUserSocket.emit("matched", {
         sessionData: currUserSessionData,
         questionData: randomQuestion,
+        roomId: roomId,
       });
 
+      // Logic for collab service: collabService(this.io, roomId) etc
+      // this.io.to(roomId).emit(...)
       console.log("Creating session...");
-      const sessionId = `session_${Date.now()}`;
+      const sessionId = roomId
 
       const requestBody = {
         sessionId: sessionId, // ID of the session
@@ -136,40 +140,42 @@ class SocketController {
         body: JSON.stringify(requestBody),
       });
     
-    if (response.ok) {
-        const result = await response.json();
-        console.log('Session created:', result);
-    } else {
-        const error = await response.json();
-        console.error('Error creating session:', error);
-    }
-      
-      console.log("Emitting navigateToCollab to both users with session ID:", sessionId);
-      this.emitNavigateToCollab(prevUserSocket, currUserSocket, sessionId, sessionData.prevUser, sessionData.currUser, questionData);
-      
+      if (response.ok) {
+          const result = await response.json();
+          console.log('Session created:', result);
+      } else {
+          const error = await response.json();
+          console.error('Error creating session:', error);
+      }
+        console.log("Emitting navigateToCollab to both users with session ID:", sessionId);
+        console.log("Session Data:", JSON.stringify(sessionData, null, 2));
+
+        this.emitNavigateToCollab(prevUserSocket, currUserSocket, sessionId, prevUserSessionData, currUserSessionData, randomQuestion);
+
+        await this.removeExistingConnection(prevUserSessionData.uid);
+        await this.removeExistingConnection(currUserSessionData.uid);
+
+        // Disconnect both users' sockets
+        prevUserSocket.disconnect();
+        currUserSocket.disconnect();
+
     } catch (error) {
       console.error(error);
-
-      prevUserSocket.emit(
+      this.io.to(prevUserSocketId).emit(
         "error",
-        "An error occurred while fetching questions. Please try again later."
+        "An error occurred while handling matching. Please try again later."
       );
       currUserSocket.emit(
         "error",
-        "An error occurred while fetching questions. Please try again later."
+        "An error occurred while handling matching. Please try again later."
       );
     } finally {
       // Remove existing connections
-      this.removeExistingConnection(prevUserSessionData.uid);
-      this.removeExistingConnection(currUserSessionData.uid);
     }
   }
 
-  emitNavigateToCollab(prevUserSocket, currUserSocket, sessionId, prevUserSessionData, currUserSessionData, questionData){
-    // Navigate to collab and pass session info
-    prevUserSocket.emit("navigateToCollab", { sessionId, sessionData: prevUserSessionData, questionData });
-    currUserSocket.emit("navigateToCollab", { sessionId, sessionData: currUserSessionData, questionData });
-
+  handleCancelMatching(uid) {
+    this.removeExistingConnection(uid);
   }
 
   handleTimeout(socket, uid) {
@@ -178,43 +184,57 @@ class SocketController {
         "matchmakingTimedOut",
         `Matchmaking timed out after ${TIMEOUT_TIME / 1000}s`
       );
-      console.log(`timed out after ${TIMEOUT_TIME / 1000}s`);
+      console.log(`${uid}} timed out after ${TIMEOUT_TIME / 1000}s`);
 
       this.removeExistingConnection(uid);
     }
   }
 
-  handleDisconnect(socket) {
-    const uid = this.findUidBySocket(socket);
-
-    if (uid) {
-      this.removeExistingConnection(uid);
-    }
+  emitNavigateToCollab(prevUserSocket, currUserSocket, sessionId, prevUserSessionData, currUserSessionData, questionData) {
+    console.log("Emitting navigateToCollab with params:", {
+      sessionId,
+      prevUserSessionData,
+      currUserSessionData,
+      questionData
+    });
+    // Navigate to collab and pass session info
+    prevUserSocket.emit("navigateToCollab", { sessionId, sessionData: prevUserSessionData, questionData });
+    currUserSocket.emit("navigateToCollab", { sessionId, sessionData: currUserSessionData, questionData });
+    console.log("Event 'navigateToCollab' emitted to both sockets.");
   }
+  
+  async handleDisconnect(socket) {
+    console.log('Disconnecting user with socket:', socket);
 
-  emitIfDoubleMatchingRequest(uid) {
-    const socketData = this.socketMap.get(uid);
-    if (!socketData) return;
+    const uid = socket.handshake.auth.uid; // Current user UID
+    const otherUid = socket.handshake.auth.otherUid; // Other user UID
 
-    const { socket, queueName } = socketData;
-    socket.emit(
+    await this.removeExistingConnection(uid); // Remove current user's connection
+    if (otherUid) {
+      await this.removeExistingConnection(otherUid); // Remove other user's connection if it exists
+    }
+}
+
+  async emitIfDoubleMatchingRequest(uid) {
+    const socketId = await this.pubClient.get(uid); // Retrieve data from Redis
+    if (!socketId) return;
+
+    this.io.to(socketId).emit(
       "doubleMatchingRequest",
       "Double matching request detected, stopping current tab's matching request"
     );
   }
 
-  removeExistingConnection(uid) {
-    console.log("Removing Existing Connection for User:", uid);
+  async removeExistingConnection(uid) {
+    console.log(`Removing (any) existing connection for user: ${uid}`);
 
-    const socketData = this.socketMap.get(uid);
-    if (!socketData) return;
+    const socketId = await this.pubClient.get(uid);
+    if (!socketId) return;
 
-    const { socket, queueName } = socketData;
+    // Remove the entry from Redis
+    await this.pubClient.del(uid); // Delete the redis entry for this uid
 
-    this.queueService.removeUserFromQueue(queueName, uid);
-    this.socketMap.delete(uid);
-
-    socket.disconnect();
+    this.io.to(socketId).emit("DisconnectSocket");
   }
 
   async getAllQuestionsOfTopicAndDifficulty(token, topic, difficulty) {
@@ -243,15 +263,6 @@ class SocketController {
 
     const questions = await response.json();
     return questions;
-  }
-
-  findUidBySocket(socket) {
-    for (const [uid, socketData] of this.socketMap.entries()) {
-      if (socketData.socket === socket) {
-        return uid;
-      }
-    }
-    return null;
   }
 }
 
