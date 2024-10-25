@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from '@/models/User';
 import { listAllUsers } from '@/services/UserFunctions';
 import UserTable from '@/components/custom/UserTable/UserTable';
+import * as Toast from '@radix-ui/react-toast';
 
 
 interface FirebaseIDToken {
@@ -52,6 +53,9 @@ const AdminConsoleView: React.FC = () => {
     const [user, setUser] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true); // To show a loading state
+    const [open, setOpen] = useState(false);  // To manage the toast state
+    const [toastMessage, setToastMessage] = useState('');  // To store toast message
+
     useEffect(() => {
         const token = localStorage.getItem('authToken');  // Assuming 'id_token' is where it's stored
         if (token) {
@@ -68,7 +72,22 @@ const AdminConsoleView: React.FC = () => {
         }
     }, []);
     
+    // Action Handlers that show a toast notification
+    const handleView = (user: User) => {
+      setToastMessage(`Viewing user: ${user.displayName}`);
+      setOpen(true);  // Show toast
+    };
 
+    const handleEdit = (user: User) => {
+      setToastMessage(`Editing user: ${user.displayName}`);
+      setOpen(true);
+    };
+
+    const handleDelete = (user: User) => {
+      setToastMessage(`Deleted user: ${user.displayName}`);
+      console.log("trying to  set toast for delete");
+      setOpen(true);
+    };
 
     
     
@@ -100,7 +119,23 @@ const AdminConsoleView: React.FC = () => {
               <p>Getting users... </p>
             ) : (
               <div className="font-bold">
-                <UserTable users={users}/>
+                <UserTable 
+        users={users} 
+        onView={handleView} 
+        onEdit={handleEdit} 
+        onDelete={handleDelete} 
+      />
+
+          {/* Toast Setup */}
+          <Toast.Provider swipeDirection="right">
+            <Toast.Root open={open} onOpenChange={setOpen}>
+              <Toast.Title>{toastMessage}</Toast.Title>
+              <Toast.Action asChild altText="Close toast">
+                <button onClick={() => setOpen(false)}>Close</button>
+              </Toast.Action>
+            </Toast.Root>
+            <Toast.Viewport />
+          </Toast.Provider>
               </div>
             )}
           </div>
