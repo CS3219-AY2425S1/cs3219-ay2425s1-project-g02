@@ -1,7 +1,7 @@
-const cors = require("cors"); 
+const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require("./routes/userRoutes");
 const firebaseConfig = require("./config/firebaseConfig"); // Ensure Firebase is initialized
 const app = express();
 
@@ -12,12 +12,12 @@ app.use(cors({
 }));
 
 // Handle preflight requests for all routes
-app.options('*', cors());
+app.options("*", cors());
 
 // Middleware
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // Routes
-app.use('/', userRoutes);
+app.use("/", userRoutes);
 
 module.exports = app;

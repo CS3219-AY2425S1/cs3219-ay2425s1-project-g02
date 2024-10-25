@@ -5,6 +5,7 @@ const authenticateToken = async (req, res, next) => {
   if (token == null) return res.status(401).json({ message: 'Token required' });
 
   try {
+    console.log("Authenticating token");
     // Verify the token with the user service
     const userServiceBackendUrl = process.env.USER_SERVICE_BACKEND_URL || "http://localhost:5001/verify-token";
     const response = await fetch(userServiceBackendUrl, { 

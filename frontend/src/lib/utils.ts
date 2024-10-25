@@ -41,7 +41,7 @@ export async function callFunction(
 ): Promise<SuccessObject> {
   try {
     const url = `${questionServiceBackendUrl}/${functionName}`;
-    const token = localStorage.getItem("authToken");
+    const token = sessionStorage.getItem("authToken");
     console.log(token);
 
     const response = await fetch(url, {

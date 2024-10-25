@@ -38,7 +38,8 @@ const QuestionPageView: React.FC = () => {
                 variant="ghost"
                 className="w-full text-left"
                 onClick={() => {
-                  localStorage.removeItem("authToken"); // Clear the token
+                  sessionStorage.removeItem("authToken"); // Clear the token
+                  sessionStorage.removeItem("uid") // Clear the uid
                   handleNavigation("/"); // Navigate to the home page
                 }}
               >
