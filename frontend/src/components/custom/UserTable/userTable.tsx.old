@@ -1,0 +1,119 @@
+use client";
+
+import {
+  ColumnDef,
+  flexRender,
+  SortingState,
+  getCoreRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  useReactTable,
+  ColumnFiltersState,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { topicArray } from "@/models/Question";
+import AddQuestionButton from "../Question/AddQuestionButton";
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+"use client";
+
+import {
+  ColumnDef,
+  flexRender,
+  SortingState,
+  getCoreRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  useReactTable,
+  ColumnFiltersState,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { topicArray } from "@/models/Question";
+import AddQuestionButton from "../Question/AddQuestionButton";
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const table = useReactTable({
+    data,
+    columns,
+    enableGlobalFilter: true,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+    },
+    initialState: {
+      columnVisibility: {
+        topics: false,
+      },
+    },
+  });
+  return (
+    <>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    </>
+  );
+}

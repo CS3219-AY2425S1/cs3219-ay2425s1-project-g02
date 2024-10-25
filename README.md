@@ -1,11 +1,8 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/bzPrOe11)
 # CS3219 Project (PeerPrep) - AY2425S1
 ## Group: G02
-### 3 ways to access the application: 
-1. Public hosted website *(public containerization)*
-2. Docker compose up locally *(local containerization)*
-3. Individual services wind up *(local development)*
 
+### How to start up the application:
 
 ### Public hosted website:
 You can access the PeerPrep application at https://frontend-1079323726684.asia-southeast1.run.app (note that matching service might be down as it is too **expensive** for us to host matching service 24/7)
@@ -66,8 +63,11 @@ docker compose build
 docker compose up -d
 ```
 
-Access the frontend at `localhost:3000`. Note that this method (`docker compose up -d`) might take awhile as the matching service is only started after rabbitMQ is set up (which takes awhile)
+<<<<<<< HEAD
+Access the frontend at `localhost:3000` and the question service (backend) at `localhost:5001`.
 
-### Individual services wind up:
-For each backend service, cd into them and run `node server.js` or `nodemon server.js` \
-For the frontend service, cd into it and run `npm run dev`
+
+=======
+Access the frontend at `localhost:3000`. Note that this method (`docker compose up -d`) might take awhile as the matching service is only started after rabbitMQ is set up (which takes awhile)
+>>>>>>> upstream/main
+
