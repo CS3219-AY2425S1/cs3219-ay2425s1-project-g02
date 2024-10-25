@@ -76,21 +76,26 @@ export async function callFunction(
 export async function callUserFunction(
   functionName: string,
   method: string = "GET",
-  body?: any
+  body?: any,
+  customHeaders?: Record<string, string>
 ): Promise<SuccessObject> {
   try {
     const url = `${userServiceBackendUrl}/${functionName}`;
     const token = localStorage.getItem("authToken");
-    // console.log(token);
+
+    // Create default headers
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      ...customHeaders, // Merge custom headers if any
+    };
 
     const response = await fetch(url, {
       method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+      headers,
+      body: method !== "GET" ? JSON.stringify(body) : undefined, // Avoid sending body for GET requests
     });
+
     if (!response.ok) {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
@@ -108,6 +113,6 @@ export async function callUserFunction(
     return { success: true, data: result };
   } catch (error: any) {
     console.error("Fetch error:", error);
-    return { success: false, error }; // Handle the error (could also throw or handle differently)
+    return { success: false, error }; // Handle the error
   }
 }

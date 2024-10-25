@@ -19,4 +19,27 @@ const listAllUsers = async (req, res) => {
     }
 }
 
-module.exports = { listAllUsers };
+// Function to create a new user and add them to the Firestore collection
+const addToUserCollection = async (req, res) => {
+    const { uid, email, displayName } = req.body;
+
+    try {
+        console.log("Attempting to add user to Firestore:", uid, email, displayName);
+
+        // Add the user entry to Firestore
+        await db.collection("users").doc(uid).set({
+            uid: uid,
+            email: email,
+            displayName: displayName || 'No Name',
+            isAdmin: false,
+        });
+
+        console.log("User successfully added to Firestore");
+        res.status(201).json({ message: "User created successfully", uid });
+    } catch (error) {
+        console.error("Error writing to Firestore:", error);
+        res.status(500).send("Error adding user to Firestore");
+    }
+};
+
+module.exports = { addToUserCollection, listAllUsers };
