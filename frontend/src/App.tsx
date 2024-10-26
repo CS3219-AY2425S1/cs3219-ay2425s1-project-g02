@@ -7,6 +7,7 @@ import CreateAccountPageView from "./views/CreateAccountPageView";
 import CollabPageView from "./views/CollabPageView";
 import DeleteAccountPage from "./views/DeleteAccountPageView";
 import AdminConsoleView from "./views/AdminConsoleView";
+import DiagnosticView from "./views/DiagnosticView";
 import ProtectedRoute from "@/components/custom/ProtectedRoute/ProtectedRoute"; 
 
 const App: React.FC = () => {
@@ -48,6 +49,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <AdminConsoleView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/diagnostic"
+          element={
+            <ProtectedRoute>
+              <DiagnosticView />
             </ProtectedRoute>
           }
         />

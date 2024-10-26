@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
         password
       );
 
-      const idToken = await userCredential.user.getIdToken();
+      const idToken = await userCredential.user.getIdToken(true);
       const uid = userCredential.user.uid;
 
       sessionStorage.setItem("authToken", idToken);

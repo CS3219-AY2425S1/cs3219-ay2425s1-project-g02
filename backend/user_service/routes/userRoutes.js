@@ -1,4 +1,4 @@
-const { addToUserCollection, listAllUsers } = require('../controllers/userController');
+const { addToUserCollection, listAllUsers, checkAdminStatus } = require('../controllers/userController');
 const express = require('express');
 const authenticateToken = require('../middleware/authenticateToken'); // Import the authentication middleware
 const router = express.Router();
@@ -14,5 +14,7 @@ router.get('/admin/users', listAllUsers);
 
 // Route to create a new user
 router.post('/user/addToUserCollection', addToUserCollection); // New route for user creation
+
+router.get('/admin/checkAdminStatus', checkAdminStatus); // Add the route
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const { db, auth } = require("../config/firebaseConfig.js");
+const admin = require('firebase-admin');
 
 // Function to list all users in Firebase Authentication
 const listAllUsers = async (req, res) => {
@@ -42,4 +43,32 @@ const addToUserCollection = async (req, res) => {
     }
 };
 
-module.exports = { addToUserCollection, listAllUsers };
+const checkAdminStatus = async (req, res) => {
+    const token = req.headers.authorization?.split('Bearer ')[1];
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    try {
+        // Verify the token
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
+
+        // Fetch user data from Firestore
+        const userDoc = await admin.firestore().collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const userData = userDoc.data();
+        const isAdmin = userData.isAdmin || false; // Assuming you have isAdmin field
+
+        return res.status(200).json({ success: true, isAdmin });
+    } catch (error) {
+        console.error('Error checking admin status:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+module.exports = { addToUserCollection, listAllUsers, checkAdminStatus };

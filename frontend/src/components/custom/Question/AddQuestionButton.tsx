@@ -3,8 +3,17 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import AddQuestionDialog from "./AddQuestionDialog";
 
-function AddQuestionButton() {
+interface AddQuestionButtonProps {
+  isAdmin: Boolean; // Accepts admin status as a prop
+}
+
+function AddQuestionButton({ isAdmin }: AddQuestionButtonProps) {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+    // Don't render anything if not an admin
+    if (!isAdmin) {
+      return null; // Return null to render nothing
+    }
 
   const handleOpenDialog = () => {
     setOpenDialog(true);

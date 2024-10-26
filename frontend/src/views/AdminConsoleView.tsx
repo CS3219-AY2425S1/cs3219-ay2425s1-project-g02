@@ -57,7 +57,7 @@ const AdminConsoleView: React.FC = () => {
     const [toastMessage, setToastMessage] = useState('');  // To store toast message
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');  // Assuming 'id_token' is where it's stored
+        const token = sessionStorage.getItem('authToken');  // Assuming 'id_token' is where it's stored
         if (token) {
           const decoded = decodeToken(token);
           if (decoded && decoded.email) {

@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
@@ -30,6 +30,8 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
+
+import { fetchAdminStatus } from "@/services/UserFunctions";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -66,6 +68,32 @@ export function DataTable<TData, TValue>({
     table.getColumn("topics")?.setFilterValue(selectedValues);
   };
 
+  const [isAdmin, setIsAdmin] = useState<Boolean>(false);
+  
+  async function fetchStatus(): Promise<Boolean> {
+
+      const res = await fetchAdminStatus();
+      if (!res.success) {
+        console.error("Error fetching data", res.error);
+        return false;
+      }
+
+      const isAdmin: boolean = res.data.isAdmin;
+      console.log("user is admin: " + res.data.isAdmin)
+      return isAdmin;
+  };
+
+
+    useEffect(() => {
+        
+      async function updateStatus() {
+        const result = await fetchStatus();
+        setIsAdmin(result)
+      }
+      updateStatus();
+      
+    }, []);
+
   return (
     <>
       <div className="flex items-center justify-between my-3">
@@ -84,7 +112,7 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
 
-        <AddQuestionButton />
+        <AddQuestionButton isAdmin={isAdmin} />
       </div>
       <div className="rounded-md border">
         <Table>
