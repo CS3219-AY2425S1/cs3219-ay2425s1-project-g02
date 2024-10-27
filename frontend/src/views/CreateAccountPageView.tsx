@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 // firebase imports
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
+import { addToUserCollection } from "@/services/UserFunctions";
 
 const CreateAccountPage: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
@@ -25,14 +26,15 @@ const CreateAccountPage: React.FC = () => {
 	const [alertTitle, setAlertTitle] = useState<string>("");
 	const [alertDescription, setAlertDescription] = useState<string>("");
 	const navigate = useNavigate();
+	
 
 	const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault(); // prevent refresh
 
 		// create account on firebase
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
-
+			const user = await createUserWithEmailAndPassword(auth, email, password);
+			await addToUserCollection(user);
 			// show alert & redirect after 3s
 			setAlertIcon(true);
 			setAlertTitle("Account created successfully");
