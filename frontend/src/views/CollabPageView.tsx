@@ -149,10 +149,11 @@ const CollabPageView: React.FC = () => {
 
 	const handleMessageSend = () => {
 		if (message.trim() && socket) {
+			const uid = sessionStorage.getItem("uid");
 			socket.emit("sendMessage", {
 				sessionId: sessionIdObj,
 				message: message.trim(),
-				username: userId,
+				uid: uid,
 			});
 			setMessage(""); // Clear the input field
 		}
