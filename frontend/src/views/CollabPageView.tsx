@@ -176,7 +176,7 @@ const CollabPageView: React.FC = () => {
       socket.emit("sendMessage", {
         sessionId: sessionIdObj,
         message: message.trim(),
-        username: userId,
+        uid: userId,
       });
       setMessage(""); // Clear the input field
     }
@@ -185,10 +185,9 @@ const CollabPageView: React.FC = () => {
   // Handle Quit Session button click
   const handleQuitSession = () => {
     if (socket) {
-      const uid = sessionStorage.getItem("uid");
       socket.emit("terminateSession", {
         sessionId: sessionIdObj,
-        uid: uid,
+        uid: userId,
       });
     }
   };
