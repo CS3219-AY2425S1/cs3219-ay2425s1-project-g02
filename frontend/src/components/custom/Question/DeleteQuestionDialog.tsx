@@ -53,7 +53,7 @@ const DeleteQuestionDialog: React.FC<DeleteQuestionCardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="justify-center">
+      <DialogContent className="justify-center overflow-x-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold leading-none tracking-tight">
             Delete Question:{" "}
