@@ -83,7 +83,7 @@ const CollabPageView: React.FC = () => {
           return true;
         } else {
           alert(
-            "Your session has ended or is no longer available.\n Please return to the matching page to start a new session."
+            "Your session has ended or is no longer available.\nPlease return to the matching page to start a new session."
           );
           navigate("/questions");
           return false;
@@ -167,7 +167,7 @@ const CollabPageView: React.FC = () => {
 
       newSocket.on("userLeft", () => {
         alert(
-          `The other user has left the session.\n Note that upon refreshing the page, the session will be terminated.`
+          `The other user has left the session.\nNote that upon refreshing the page, the session will be terminated.`
         );
       });
 
