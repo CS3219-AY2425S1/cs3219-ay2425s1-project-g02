@@ -53,12 +53,12 @@ const DeleteQuestionDialog: React.FC<DeleteQuestionCardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="justify-center overflow-x-auto">
+      <DialogContent className="justify-center">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold leading-none tracking-tight">
             Delete Question:{" "}
-            {question.title.length > 75
-              ? question.title.slice(0, 75) + "..."
+            {question.title.length > 40
+              ? question.title.slice(0, 40) + "..."
               : question.title}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
@@ -68,8 +68,9 @@ const DeleteQuestionDialog: React.FC<DeleteQuestionCardProps> = ({
         <div className="flex flex-col items-center justify-center">
           <p>Are you sure you want to delete this question?</p>
           <b className="text-xl my-2 text-orange-500">
-            {question.title.length > 75
-              ? question.title.slice(0, 75) + "..."
+            {" "}
+            {question.title.length > 40
+              ? question.title.slice(0, 40) + "..."
               : question.title}
           </b>
         </div>
