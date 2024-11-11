@@ -132,9 +132,7 @@ const CollabPageView: React.FC = () => {
       });
 
       newSocket.on("userLeft", () => {
-        alert(
-          `The other user has left the session. \nNote that if you refresh, you will be diverted back to the homepage.`
-        );
+        alert(`The other user has left the session.`);
       });
 
       newSocket.on("messageReceived", (data) => {
