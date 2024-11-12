@@ -321,11 +321,16 @@ const CollabPageView: React.FC = () => {
         }
       );
 
-      const jsonData = await response.data;
-      setCodeOutput(jsonData.run.output);
-      jsonData.run.code !== CODE_EXECUTED_SUCCESSFULLY
-        ? setIsError(true)
-        : setIsError(false);
+      const tooManyRequestsErrorMessage = "Requests limited to 1 per 200ms";
+      if (response.error == tooManyRequestsErrorMessage) {
+        alert("Too many code execution requests at the moment\nPlease wait before running the code again");
+      } else {
+        const jsonData = await response.data;
+        setCodeOutput(jsonData.run.output);
+        jsonData.run.code !== CODE_EXECUTED_SUCCESSFULLY
+          ? setIsError(true)
+          : setIsError(false);
+      }
 
       const requestBody = {
         userUid: userId,
