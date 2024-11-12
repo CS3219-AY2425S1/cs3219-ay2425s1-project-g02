@@ -25,14 +25,10 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login attempted"); 
+    console.log("Login attempted");
 
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await signInWithEmailAndPassword(auth, email, password);
 
       navigate("/questions");
     } catch {
@@ -126,8 +122,10 @@ const LoginPage: React.FC = () => {
               {error && <div className="error-message">{error}</div>}
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button type="submit">Login</Button>
+          <CardFooter className="flex justify-center w-full">
+            <Button className="w-full" type="submit">
+              Login
+            </Button>
           </CardFooter>
         </form>
       </Card>
