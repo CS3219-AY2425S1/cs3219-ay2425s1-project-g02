@@ -128,12 +128,6 @@ const LoginPage: React.FC = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button type="submit">Login</Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/forgot-password")}
-            >
-              Forget Password
-            </Button>
           </CardFooter>
         </form>
       </Card>
