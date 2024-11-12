@@ -533,7 +533,7 @@ const CollabPageView: React.FC = () => {
             </div>
             <div style={{ display: "flex", gap: "10px" }}>
               <Textarea
-                style={{ flex: 1 }}
+                style={{ flex: 1, resize: "none" }}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -643,6 +643,7 @@ const CollabPageView: React.FC = () => {
                 height: "60%",
                 border: isError ? "1px solid red" : "",
                 color: isError ? "red" : "",
+                resize: "none",
               }}
               value={
                 codeOutput
