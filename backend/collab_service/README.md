@@ -28,25 +28,4 @@ The PeerPrep backend provides services for managing and querying questions used 
 4. **You can find the server started at localhost:5004**
 
 ## Trying out the collaboration service
-
-1. **Ensure you are authenticated**
-
-   Log into the application using two different users.
-    
-2. **Navgiating to the collaboration page**
-   
-   From the Questions Page, for both users, select the same topic(s) and difficulty, then click on the `Start Matching` button.
-
-3. **Testing the collaboration page**
-
-   After matching, a question with the selected topic(s) and difficulty is populated.
-
-   Type in the chatbox to chat to the other user for collaboration.
-   
-   Type in the code editor to start coding, the code will updated in real-time for the other user and vice-versa.
-   
-   Click on the `Run Code` button to test your code's output.
-
-4. **Exiting the collaboration session**
-
-   To exit from the collaboration page, click on the `Quit Session` button.
+*to be filled in after linking with matching service
